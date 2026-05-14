@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHL Network Logs — Premium Support Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#07090f;--surface:#0f1521;--surface2:#161f30;--surface3:#1d2740;
+  --border:#1f2e46;--accent:#00c8f0;--accent2:#ff7043;--accent3:#00e676;
+  --purple:#a78bfa;--text:#dde6f0;--muted:#4e6278;--error:#f4446e;--warn:#ffc93c;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,.4);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.brand-name{font-weight:800;font-size:15px;letter-spacing:.5px;}
+.brand-name span{color:var(--accent);}
+.brand-sub{font-size:10px;color:var(--muted);margin-top:-2px;}
+.score-pill{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--accent3);}
+.prog-wrap{height:2px;background:var(--border);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .5s ease;width:0%;}
+
+/* LAYOUT */
+.shell{display:flex;flex:1;}
+nav.sidebar{width:248px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;display:flex;flex-direction:column;gap:4px;}
+.nav-group-label{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;padding:8px 8px 4px;margin-top:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.nav-item:hover{background:var(--surface2);}
+.nav-item.active{background:rgba(0,200,240,.08);border-color:rgba(0,200,240,.25);}
+.nav-item.done .nav-num{background:var(--accent3)!important;color:#000!important;}
+.nav-num{width:24px;height:24px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;font-family:'JetBrains Mono',monospace;transition:all .2s;}
+.nav-item.active .nav-num{background:var(--accent);color:#000;}
+.nav-label{font-size:12px;font-weight:600;line-height:1.3;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--accent);}
+.nav-item.done .nav-label{color:var(--text);}
+.content-area{flex:1;padding:36px 40px;overflow-y:auto;display:flex;flex-direction:column;gap:24px;max-width:960px;}
+.module{display:none;flex-direction:column;gap:22px;}
+.module.active{display:flex;animation:sIn .25s ease;}
+@keyframes sIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* MODULE HEADER */
+.mod-tag{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+.mod-title{font-size:26px;font-weight:800;line-height:1.15;margin-bottom:6px;}
+.mod-sub{font-size:14px;color:var(--muted);line-height:1.5;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.card-title{font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.ib{background:var(--surface2);border-radius:10px;padding:15px;border:1px solid var(--border);}
+.ib-t{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;}
+.ib ul{padding-left:14px;display:flex;flex-direction:column;gap:5px;}
+.ib li{font-size:12px;line-height:1.5;}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:14px 18px;font-size:13px;line-height:1.7;display:flex;gap:12px;align-items:flex-start;}
+.callout .ci{font-size:18px;flex-shrink:0;margin-top:1px;}
+.ci-info{background:rgba(0,200,240,.06);border:1px solid rgba(0,200,240,.2);}
+.ci-warn{background:rgba(255,201,60,.06);border:1px solid rgba(255,201,60,.2);}
+.ci-ok{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);}
+.ci-danger{background:rgba(244,68,110,.06);border:1px solid rgba(244,68,110,.2);}
+
+/* LOG VIEWER */
+.lv{background:#050810;border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:'JetBrains Mono',monospace;}
+.lv-bar{background:var(--surface2);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.dots span{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:4px;}
+.lv-title{font-size:11px;color:var(--muted);font-family:'Outfit',sans-serif;margin-left:6px;}
+.lf-bar{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;}
+.lf{padding:3px 11px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Outfit',sans-serif;transition:all .15s;}
+.lf.on.all{background:var(--accent);border-color:var(--accent);color:#000;}
+.lf.on.err{background:var(--error);border-color:var(--error);color:#fff;}
+.lf.on.srv{background:var(--warn);border-color:var(--warn);color:#000;}
+.lr{display:grid;grid-template-columns:82px 52px 44px 1fr 64px;gap:10px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .12s;border:1px solid transparent;font-size:11px;}
+.lr:hover{background:rgba(255,255,255,.03);}
+.lr.hl{background:rgba(0,200,240,.06);border-color:rgba(0,200,240,.18);}
+.lrows{max-height:260px;overflow-y:auto;padding:8px;}
+.lt{color:#3a5272;}.lm{font-weight:700;}
+.GET{color:var(--accent3);}.POST{color:var(--accent);}.PUT{color:var(--warn);}.DELETE{color:var(--error);}
+.ls{font-weight:700;}.s2{color:var(--accent3);}.s4{color:var(--warn);}.s5{color:var(--error);}
+.lu{color:#6a98c0;word-break:break-all;font-size:10px;}.lsz{color:var(--muted);text-align:right;font-size:10px;}
+.insp{background:#050810;border:1px solid rgba(0,200,240,.18);border-radius:10px;padding:18px;font-family:'JetBrains Mono',monospace;font-size:11px;display:none;margin-top:12px;line-height:1.7;}
+.insp.open{display:block;animation:sIn .2s;}
+.insp-t{font-size:9px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-family:'Outfit',sans-serif;}
+.ik{color:var(--muted);min-width:110px;display:inline-block;}.iv{color:var(--text);}
+.irow{margin-bottom:4px;}
+.isec{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.isec-t{font-size:9px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Outfit',sans-serif;}
+.ibody{background:var(--surface2);border-radius:8px;padding:12px;color:var(--accent3);white-space:pre-wrap;font-size:11px;line-height:1.6;}
+.imsg{background:rgba(0,200,240,.05);border:1px solid rgba(0,200,240,.15);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;line-height:1.7;}
+.iact{background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:12px 14px;color:var(--accent3);font-family:'Outfit',sans-serif;font-size:13px;line-height:1.7;}
+
+/* STATUS CODES */
+.sc-row{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px;}
+.sc-head{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;transition:background .12s;user-select:none;}
+.sc-head:hover{background:var(--surface3);}
+.sc-code{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;min-width:55px;}
+.sc-name{font-size:13px;font-weight:700;flex:1;}
+.sc-grp{font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 9px;border-radius:12px;}
+.sc-arr{color:var(--muted);margin-left:8px;transition:transform .2s;font-size:13px;}
+.sc-body{display:none;padding:12px 16px 16px;border-top:1px solid var(--border);}
+.sc-desc{font-size:13px;line-height:1.7;margin-bottom:10px;}
+.sc-act{display:flex;align-items:flex-start;gap:8px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:7px;padding:9px 13px;font-size:12px;color:var(--accent3);line-height:1.6;}
+
+/* SCENARIOS */
+.ticket{background:rgba(255,112,67,.06);border:1px solid rgba(255,112,67,.3);border-radius:12px;padding:18px;}
+.tkt-label{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--accent2);text-transform:uppercase;margin-bottom:5px;}
+.tkt-title{font-size:15px;font-weight:700;color:var(--accent2);margin-bottom:8px;}
+.tkt-body{font-size:13px;line-height:1.75;}
+.step-list{display:flex;flex-direction:column;gap:8px;}
+.sitem{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:9px;border:1px solid var(--border);cursor:pointer;transition:all .18s;font-size:13px;line-height:1.55;}
+.sitem:hover:not(.locked){border-color:var(--accent2);background:rgba(255,112,67,.04);}
+.sitem.sdone{border-color:var(--accent3);background:rgba(0,230,118,.05);}
+.sitem.locked{opacity:.35;cursor:default;}
+.scb{width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .18s;margin-top:1px;}
+.sitem.sdone .scb{background:var(--accent3);border-color:var(--accent3);color:#000;}
+.done-banner{display:none;align-items:center;gap:12px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.25);border-radius:10px;padding:14px 18px;font-size:13px;font-weight:600;color:var(--accent3);margin-top:10px;}
+.done-banner.show{display:flex;animation:sIn .3s;}
+
+/* QUIZ */
+.quiz-q{font-size:15px;font-weight:700;margin-bottom:16px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.qopt{padding:12px 16px;border:1px solid var(--border);border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s;display:flex;align-items:flex-start;gap:10px;line-height:1.5;}
+.qopt:hover:not(.locked){border-color:var(--accent);color:var(--accent);}
+.qopt.correct{border-color:var(--accent3);background:rgba(0,230,118,.07);color:var(--accent3);}
+.qopt.wrong{border-color:var(--error);background:rgba(244,68,110,.07);color:var(--error);}
+.qopt.locked{cursor:default;}
+.qlbl{width:24px;height:24px;border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.qfb{margin-top:14px;padding:13px 16px;border-radius:9px;font-size:13px;line-height:1.7;display:none;}
+.qfb.show{display:block;animation:sIn .2s;}
+.qfb.correct{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.25);color:var(--accent3);}
+.qfb.wrong{background:rgba(244,68,110,.07);border:1px solid rgba(244,68,110,.25);color:var(--error);}
+.qnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.qctr{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.result{text-align:center;padding:30px 20px;}
+.result-emoji{font-size:52px;margin-bottom:12px;}
+.result-score{font-size:34px;font-weight:800;margin-bottom:8px;}
+.result-msg{font-size:14px;color:var(--muted);line-height:1.6;max-width:380px;margin:0 auto 20px;}
+
+/* BUTTONS */
+.btn{padding:9px 22px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .15s;letter-spacing:.3px;}
+.btn-p{background:var(--accent);color:#000;}
+.btn-p:hover{background:#33d4f5;transform:translateY(-1px);}
+.btn-g{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-g:hover{border-color:var(--accent);color:var(--accent);}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.tip{font-size:12px;color:var(--muted);font-style:italic;margin-top:10px;}
+.kk{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.sn-list{display:flex;flex-direction:column;gap:10px;}
+.sn-item{display:flex;gap:14px;align-items:flex-start;}
+.sn-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#000;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.sn-body{font-size:13px;line-height:1.65;}
+.sn-body strong{color:var(--accent);}
+
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brand-icon">🔬</div>
+    <div>
+      <div class="brand-name">GHL <span>NetLog</span> Academy</div>
+      <div class="brand-sub">Premium Support · Network Logs Training</div>
+    </div>
+  </div>
+  <div class="score-pill"><div class="sdot"></div><span id="scorePill">0 / 7</span></div>
+</header>
+<div class="prog-wrap"><div class="prog-fill" id="pf"></div></div>
+<div class="shell">
+
+<nav class="sidebar">
+  <div class="nav-group-label">Getting Started</div>
+  <div class="nav-item active" data-m="0" onclick="go(0)"><div class="nav-num" id="nn0">1</div><div class="nav-label">What Are Network Logs?</div></div>
+  <div class="nav-item" data-m="1" onclick="go(1)"><div class="nav-num" id="nn1">2</div><div class="nav-label">Opening DevTools</div></div>
+  <div class="nav-group-label">Core Concepts</div>
+  <div class="nav-item" data-m="2" onclick="go(2)"><div class="nav-num" id="nn2">3</div><div class="nav-label">Reading the Log Viewer</div></div>
+  <div class="nav-item" data-m="3" onclick="go(3)"><div class="nav-num" id="nn3">4</div><div class="nav-label">HTTP Status Codes</div></div>
+  <div class="nav-item" data-m="4" onclick="go(4)"><div class="nav-num" id="nn4">5</div><div class="nav-label">Request &amp; Response Anatomy</div></div>
+  <div class="nav-group-label">Scenario Lab</div>
+  <div class="nav-item" data-m="5" onclick="go(5)"><div class="nav-num" id="nn5">6</div><div class="nav-label">Form &amp; Funnel Issues</div></div>
+  <div class="nav-item" data-m="6" onclick="go(6)"><div class="nav-num" id="nn6">7</div><div class="nav-label">Webhooks &amp; Workflows</div></div>
+  <div class="nav-item" data-m="7" onclick="go(7)"><div class="nav-num" id="nn7">8</div><div class="nav-label">Integrations &amp; Stripe</div></div>
+  <div class="nav-item" data-m="8" onclick="go(8)"><div class="nav-num" id="nn8">9</div><div class="nav-label">SMS &amp; Email Delivery</div></div>
+  <div class="nav-item" data-m="9" onclick="go(9)"><div class="nav-num" id="nn9">10</div><div class="nav-label">Ad Manager Pagination Bug</div></div>
+  <div class="nav-group-label">Assessment</div>
+  <div class="nav-item" data-m="10" onclick="go(10)"><div class="nav-num" id="nn10">11</div><div class="nav-label">Knowledge Quiz</div></div>
+</nav>
+
+<div class="content-area" id="ca">
+
+<!-- M0: WHAT ARE NETWORK LOGS -->
+<div class="module active" id="mod0">
+  <div><div class="mod-tag">Module 1 · Getting Started</div><div class="mod-title">What Are Network Logs?</div><div class="mod-sub">The foundational concept every Premium Support agent needs before touching DevTools.</div></div>
+  <div class="callout ci-info"><div class="ci">📡</div><div>Every time a GHL user does <em>anything</em> — submits a form, fires a workflow, loads a funnel, books a calendar slot — their browser sends <strong>HTTP requests</strong> to GHL's servers. Network Logs capture every single one of these exchanges in real time. They are your <strong>source of truth</strong> when a client says "it's not working."</div></div>
+  <div class="g2">
+    <div class="ib"><div class="ib-t">🔍 What Gets Logged</div><ul><li>Every API call the browser makes to GHL</li><li>HTTP method (GET, POST, PUT, DELETE)</li><li>Status code returned by the server</li><li>Exact data sent in the request body</li><li>Full server response — including error detail</li><li>How long each call took (timing)</li><li>Response payload size</li></ul></div>
+    <div class="ib"><div class="ib-t">🎯 When You Need Them</div><ul><li>Form/funnel submissions not saving</li><li>Webhooks not triggering</li><li>Workflow automations failing silently</li><li>Stripe or calendar integrations broken</li><li>SMS or emails not sending</li><li>Ad Manager accounts not appearing in dropdowns</li><li>Any "it worked yesterday" complaint</li></ul></div>
+  </div>
+  <div class="card"><div class="card-title"><span>⚡</span> Why Network Logs Beat Guessing</div>
+    <div class="g3">
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid var(--border);"><div style="font-size:28px;margin-bottom:8px;">🎯</div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px;">Pinpoints Exactly What Failed</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Shows the exact API endpoint that failed — not a vague error page.</div></div>
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid var(--border);"><div style="font-size:28px;margin-bottom:8px;">💬</div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px;">Plain-Text Error Messages</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Server returns structured JSON with exact error descriptions.</div></div>
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid var(--border);"><div style="font-size:28px;margin-bottom:8px;">⏱️</div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px;">Cuts Resolution Time</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Skip the 10 clarifying questions. The log tells you more than the client can.</div></div>
+    </div>
+  </div>
+  <div class="btn-row"><button class="btn btn-p" onclick="go(1)">Next: Opening DevTools →</button></div>
+</div>
+
+<!-- M1: OPENING DEVTOOLS -->
+<div class="module" id="mod1">
+  <div><div class="mod-tag">Module 2 · Getting Started</div><div class="mod-title">Opening DevTools in Chrome</div><div class="mod-sub">Step-by-step: how to open the Network tab and capture logs before reproducing a client issue.</div></div>
+  <div class="callout ci-warn"><div class="ci">⚠️</div><div><strong>Critical rule:</strong> Always open DevTools and navigate to the Network tab <em>before</em> reproducing the issue. If you open it after, the logs are gone.</div></div>
+  <div class="card"><div class="card-title"><span>🖥️</span> Step-by-Step: Capturing a Network Log</div>
+    <div class="sn-list">
+      <div class="sn-item"><div class="sn-num">1</div><div class="sn-body">Navigate to the GHL sub-account page where the issue occurs. <strong>Do not trigger the issue yet.</strong></div></div>
+      <div class="sn-item"><div class="sn-num">2</div><div class="sn-body">Open DevTools: press <span class="kk">F12</span> (Windows/Linux) or <span class="kk">Cmd + Opt + I</span> (Mac). Or right-click anywhere on the page → <strong>Inspect</strong>.</div></div>
+      <div class="sn-item"><div class="sn-num">3</div><div class="sn-body">Click the <strong>Network</strong> tab in the DevTools panel. You'll see a table waiting to record traffic.</div></div>
+      <div class="sn-item"><div class="sn-num">4</div><div class="sn-body">Confirm the red ● Record button is active (it's on by default). Enable <strong>"Preserve log"</strong> checkbox to keep logs across page reloads.</div></div>
+      <div class="sn-item"><div class="sn-num">5</div><div class="sn-body">Now <strong>reproduce the issue</strong> exactly as the client did — submit the form, click the button, trigger the workflow.</div></div>
+      <div class="sn-item"><div class="sn-num">6</div><div class="sn-body">Filter by <strong>"Fetch/XHR"</strong> to isolate API calls. Look for rows highlighted in red — those are your errors.</div></div>
+      <div class="sn-item"><div class="sn-num">7</div><div class="sn-body">Click a red row → check the <strong>Headers tab</strong> for the status code and <strong>Response tab</strong> for the full error body.</div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="ib"><div class="ib-t">🔧 Useful DevTools Filters</div><ul><li><strong>All</strong> — every request (images, CSS, JS, API)</li><li><strong>Fetch/XHR</strong> — API calls only (most useful)</li><li><strong>Doc</strong> — HTML page loads</li><li>Search bar: type a keyword like "submit" or "workflow"</li></ul></div>
+    <div class="ib"><div class="ib-t">💡 Pro Tips for Support</div><ul><li>Right-click a request → <strong>"Copy as cURL"</strong> to share exact call with devs</li><li>Right-click → <strong>"Save all as HAR"</strong> to export full log as a file</li><li>Ask clients to screenshot the red row + the Response tab</li><li>GHL also has in-app logs: Settings → Integrations → Webhook Logs</li></ul></div>
+  </div>
+  <div class="btn-row"><button class="btn btn-g" onclick="go(0)">← Back</button><button class="btn btn-p" onclick="go(2)">Next: Reading the Log Viewer →</button></div>
+</div>
+
+<!-- M2: READING THE LOG VIEWER -->
+<div class="module" id="mod2">
+  <div><div class="mod-tag">Module 3 · Core Concepts</div><div class="mod-title">Reading the Log Viewer</div><div class="mod-sub">Click any log row to inspect the full request and response. Practice this on every support call.</div></div>
+  <div class="card"><div class="card-title"><span>🖥️</span> Interactive Log Viewer — Click any row to inspect it</div>
+    <div class="lf-bar">
+      <button class="lf all on" id="lf_all" onclick="filterL('all')">All Requests</button>
+      <button class="lf err" id="lf_err" onclick="filterL('err')">Errors (4xx / 5xx)</button>
+      <button class="lf srv" id="lf_srv" onclick="filterL('srv')">Server Errors (5xx)</button>
+    </div>
+    <div class="lv"><div class="lv-bar"><div class="dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c940"></span></div><span class="lv-title">DevTools — Network Tab · Sub-Account: Acme Marketing Co</span></div><div class="lrows" id="logRows"></div></div>
+    <p class="tip">💡 Click any row to open the Inspector below</p>
+    <div class="insp" id="logInsp"></div>
+  </div>
+  <div class="card"><div class="card-title"><span>📖</span> Column Reference</div>
+    <div class="g2" style="gap:10px;">
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;border:1px solid var(--border)"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;">Time</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">When the browser made the request. Correlate with the client's reported timestamp.</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;border:1px solid var(--border)"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;">Method</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">GET = fetch, POST = create/send, PUT = update, DELETE = remove. Wrong method → 405.</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;border:1px solid var(--border)"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;">Status</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">HTTP response code — your first diagnostic clue. 200=OK, 4xx=client issue, 5xx=server.</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px;border:1px solid var(--border)"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;">URL / Endpoint</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">The specific API path. Tells you which GHL feature was involved — forms, webhooks, contacts, etc.</div></div>
+    </div>
+  </div>
+  <div class="btn-row"><button class="btn btn-g" onclick="go(1)">← Back</button><button class="btn btn-p" onclick="go(3)">Next: HTTP Status Codes →</button></div>
+</div>
+
+<!-- M3: STATUS CODES -->
+<div class="module" id="mod3">
+  <div><div class="mod-tag">Module 4 · Core Concepts</div><div class="mod-title">HTTP Status Codes</div><div class="mod-sub">The code is always your first clue. Learn the groups first, then the specific codes you'll encounter in GHL.</div></div>
+  <div class="card"><div class="card-title"><span>🚦</span> The Five Code Groups</div>
+    <div class="g3" style="margin-bottom:10px;">
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid rgba(0,230,118,.2)"><div style="font-size:22px;font-weight:800;color:var(--accent3);font-family:'JetBrains Mono',monospace">2xx</div><div style="font-size:12px;font-weight:700;color:var(--accent3);margin-top:4px;">Success</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Request worked as expected</div></div>
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid rgba(0,200,240,.2)"><div style="font-size:22px;font-weight:800;color:var(--accent);font-family:'JetBrains Mono',monospace">3xx</div><div style="font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;">Redirect</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">URL has moved or changed</div></div>
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid rgba(255,201,60,.2)"><div style="font-size:22px;font-weight:800;color:var(--warn);font-family:'JetBrains Mono',monospace">4xx</div><div style="font-size:12px;font-weight:700;color:var(--warn);margin-top:4px;">Client Error</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Bad request, auth fail, not found</div></div>
+    </div>
+    <div class="g2">
+      <div style="text-align:center;background:var(--surface2);border-radius:9px;padding:14px;border:1px solid rgba(244,68,110,.2)"><div style="font-size:22px;font-weight:800;color:var(--error);font-family:'JetBrains Mono',monospace">5xx</div><div style="font-size:12px;font-weight:700;color:var(--error);margin-top:4px;">Server Error</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">GHL server crashed — not the client's fault</div></div>
+      <div class="callout ci-info" style="margin:0;border-radius:9px;"><div class="ci">💡</div><div style="font-size:12px;line-height:1.6"><strong style="color:var(--accent)">4xx = something the client or integration configured wrong.</strong><br>5xx = GHL infrastructure problem — escalate, check status page.</div></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title"><span>📋</span> Full Status Code Reference — Click to Expand</div><div id="scGrid"></div></div>
+  <div class="btn-row"><button class="btn btn-g" onclick="go(2)">← Back</button><button class="btn btn-p" onclick="go(4)">Next: Request Anatomy →</button></div>
+</div>
+
+<!-- M4: ANATOMY -->
+<div class="module" id="mod4">
+  <div><div class="mod-tag">Module 5 · Core Concepts</div><div class="mod-title">Request &amp; Response Anatomy</div><div class="mod-sub">What to look for inside each HTTP call — the parts that carry the real diagnostic information.</div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><span>📤</span> Anatomy of a Request</div>
+      <div class="lv"><div class="lv-bar"><div class="dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c940"></span></div><span class="lv-title">Outgoing Request</span></div>
+      <div style="padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.1;">
+<span style="color:var(--accent)">POST</span> <span style="color:#6a98c0">/api/v1/forms/submit</span> <span style="color:var(--muted)">HTTP/1.1</span>
+<span style="color:var(--muted)">Host: </span><span style="color:var(--text)">rest.gohighlevel.com</span>
+<span style="color:var(--muted)">Authorization: </span><span style="color:var(--warn)">Bearer eyJhbGci...</span>  <span style="color:var(--muted)">← token</span>
+<span style="color:var(--muted)">Content-Type: </span><span style="color:var(--text)">application/json</span>
+
+<span style="color:var(--accent3)">{</span>
+  <span style="color:var(--accent)">"locationId"</span>: <span style="color:var(--accent2)">"loc_abc123"</span>,
+  <span style="color:var(--accent)">"formId"</span>:     <span style="color:var(--accent2)">"form_991"</span>,
+  <span style="color:var(--accent)">"email"</span>:      <span style="color:var(--accent2)">""</span>,      <span style="color:var(--error)">← EMPTY!</span>
+  <span style="color:var(--accent)">"phone"</span>:      <span style="color:var(--accent2)">"555-123"</span>  <span style="color:var(--error)">← bad format</span>
+<span style="color:var(--accent3)">}</span>
+      </div></div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <div style="border-left:3px solid var(--warn);padding:8px 12px;background:var(--surface2);border-radius:0 7px 7px 0;font-size:12px;line-height:1.5;"><strong style="color:var(--warn);font-family:'JetBrains Mono',monospace">Authorization Header</strong><br>The Bearer token or API key. Expired or missing → 401. This is the #1 cause of integration failures.</div>
+        <div style="border-left:3px solid var(--accent2);padding:8px 12px;background:var(--surface2);border-radius:0 7px 7px 0;font-size:12px;line-height:1.5;"><strong style="color:var(--accent2);font-family:'JetBrains Mono',monospace">locationId</strong><br>Every GHL sub-account request includes this. Wrong ID = data goes to the wrong account.</div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title"><span>📥</span> Anatomy of a Response</div>
+      <div class="lv"><div class="lv-bar"><div class="dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c940"></span></div><span class="lv-title">Server Response — 422</span></div>
+      <div style="padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.1;">
+<span style="color:var(--warn)">HTTP/1.1 422 Unprocessable Entity</span>
+
+<span style="color:var(--accent3)">{</span>
+  <span style="color:var(--accent)">"error"</span>: <span style="color:var(--error)">"Validation failed"</span>,
+  <span style="color:var(--accent)">"fields"</span>: <span style="color:var(--accent3)">{</span>
+    <span style="color:var(--accent)">"email"</span>: <span style="color:var(--error)">"Email is required"</span>,
+    <span style="color:var(--accent)">"phone"</span>: <span style="color:var(--error)">"Use E.164 format"</span>
+  <span style="color:var(--accent3)">}</span>,
+  <span style="color:var(--accent)">"traceId"</span>: <span style="color:var(--purple)">"tr_8821bb92"</span>   <span style="color:var(--muted)">← save!</span>
+<span style="color:var(--accent3)">}</span>
+      </div></div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <div style="border-left:3px solid var(--accent3);padding:8px 12px;background:var(--surface2);border-radius:0 7px 7px 0;font-size:12px;line-height:1.5;"><strong style="color:var(--accent3);font-family:'JetBrains Mono',monospace">"fields" object</strong><br>GHL validation errors list exactly which field failed and why. This is your diagnostic shortcut — read it first.</div>
+        <div style="border-left:3px solid var(--purple);padding:8px 12px;background:var(--surface2);border-radius:0 7px 7px 0;font-size:12px;line-height:1.5;"><strong style="color:var(--purple);font-family:'JetBrains Mono',monospace">"traceId"</strong><br>A unique error identifier. Always copy this when escalating to GHL engineering — it's how they trace what happened server-side.</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout ci-ok"><div class="ci">✅</div><div><strong>Golden Rule:</strong> Never diagnose from the status code alone. Always open the <strong>Response tab</strong> and read the body. The message and fields objects tell you the root cause in plain language.</div></div>
+  <div class="btn-row"><button class="btn btn-g" onclick="go(3)">← Back</button><button class="btn btn-p" onclick="go(5)">Enter the Scenario Lab →</button></div>
+</div>
+
+<!-- M5-M9: SCENARIO MODULES -->
+<div class="module" id="mod5"><div><div class="mod-tag">Module 6 · Scenario Lab</div><div class="mod-title">Form &amp; Funnel Issues</div><div class="mod-sub">Work through the diagnosis step by step — just like a real support ticket.</div></div><div id="sc5"></div><div class="btn-row" style="margin-top:4px;"><button class="btn btn-g" onclick="go(4)">← Back</button><button class="btn btn-p" onclick="go(6)">Next Scenario →</button></div></div>
+
+<div class="module" id="mod6"><div><div class="mod-tag">Module 7 · Scenario Lab</div><div class="mod-title">Webhooks &amp; Workflow Triggers</div><div class="mod-sub">The most common "silent failure" — nothing breaks visibly, but automations stop running.</div></div><div id="sc6"></div><div class="btn-row" style="margin-top:4px;"><button class="btn btn-g" onclick="go(5)">← Back</button><button class="btn btn-p" onclick="go(7)">Next Scenario →</button></div></div>
+
+<div class="module" id="mod7"><div><div class="mod-tag">Module 8 · Scenario Lab</div><div class="mod-title">Integration &amp; Stripe Failures</div><div class="mod-sub">Third-party integrations have their own auth layers. Network logs expose them all.</div></div><div id="sc7"></div><div class="btn-row" style="margin-top:4px;"><button class="btn btn-g" onclick="go(6)">← Back</button><button class="btn btn-p" onclick="go(8)">Next Scenario →</button></div></div>
+
+<div class="module" id="mod8"><div><div class="mod-tag">Module 9 · Scenario Lab</div><div class="mod-title">SMS &amp; Email Delivery Issues</div><div class="mod-sub">When messages disappear — logs reveal whether GHL sent them or something upstream failed.</div></div><div id="sc8"></div><div class="btn-row" style="margin-top:4px;"><button class="btn btn-g" onclick="go(7)">← Back</button><button class="btn btn-p" onclick="go(9)">Next Scenario →</button></div></div>
+
+<div class="module" id="mod9"><div><div class="mod-tag">Module 10 · Scenario Lab</div><div class="mod-title">Ad Manager: Pagination &amp; Fuzzy Search Bug</div><div class="mod-sub">A real GHL edge case — an Ad account exists in Facebook but won't appear in the GHL integration dropdown.</div></div><div id="sc9"></div><div class="btn-row" style="margin-top:4px;"><button class="btn btn-g" onclick="go(8)">← Back</button><button class="btn btn-p" onclick="go(10)">Take the Quiz →</button></div></div>
+
+<!-- M10: QUIZ -->
+<div class="module" id="mod10">
+  <div><div class="mod-tag">Module 11 · Assessment</div><div class="mod-title">Knowledge Quiz</div><div class="mod-sub">7 questions based on real GHL support scenarios. Take your time — read each question carefully.</div></div>
+  <div class="card" id="qBox"></div>
+  <div class="btn-row"><button class="btn btn-g" onclick="go(9)">← Back to Lab</button><button class="btn btn-g" onclick="resetQ()">↺ Retake Quiz</button></div>
+</div>
+
+</div><!-- /content-area -->
+</div><!-- /shell -->
+
+<script>
+/* ── NAVIGATION ── */
+let cur = 0;
+const done = new Set();
+function go(i) {
+  done.add(cur);
+  document.getElementById('mod'+cur).classList.remove('active');
+  document.querySelector('[data-m="'+cur+'"]').classList.remove('active');
+  if(done.has(cur)) document.querySelector('[data-m="'+cur+'"]').classList.add('done');
+  cur = i;
+  document.getElementById('mod'+i).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('[data-m="'+i+'"]').classList.add('active');
+  document.getElementById('pf').style.width=(done.size/11*100)+'%';
+  document.getElementById('ca').scrollTop=0;
+  buildScenario(i);
+}
+
+/* ── LOG VIEWER DATA ── */
+const LOGS = [
+  { t:'14:02:31',m:'GET', s:200, u:'/api/v1/contacts?limit=50', sz:'12.4 KB', body:null,
+    resp:'{"contacts":[...],"count":47,"total":47}',
+    mean:'Status 200 = success. The contact list loaded fine. Nothing to investigate here.',
+    act:'No action needed — healthy traffic.' },
+  { t:'14:02:33',m:'POST',s:422,u:'/api/v1/forms/fn_991/submit',sz:'1.2 KB',
+    body:'{\n  "locationId": "loc_abc",\n  "formId": "form_991",\n  "email": "",\n  "phone": "555-1234"\n}',
+    resp:'{\n  "error": "Validation failed",\n  "fields": {\n    "email": "Email is required",\n    "phone": "Must be E.164 format (+15551234567)"\n  }\n}',
+    mean:'422 = server understood the request but data failed validation. The response body lists exactly which fields failed.',
+    act:'Open GHL Form Builder → check field mappings. Email field is empty on submit, phone format is wrong. Fix both and retest.' },
+  { t:'14:02:35',m:'POST',s:500,u:'/api/v1/workflows/wf_8821/trigger',sz:'0.8 KB',
+    body:'{\n  "workflowId": "wf_8821",\n  "contactId": "ct_991"\n}',
+    resp:'{\n  "error": "Internal Server Error",\n  "message": "Database timeout",\n  "traceId": "tr_9921ab"\n}',
+    mean:'500 = GHL\'s server crashed processing this. NOT the client\'s fault — this is a GHL infrastructure problem.',
+    act:'Copy the traceId "tr_9921ab". Escalate to GHL engineering with the traceId and exact timestamp. Check status.gohighlevel.com.' },
+  { t:'14:02:38',m:'GET', s:401,u:'/api/v1/calendar/appointments',sz:'0.3 KB',body:null,
+    resp:'{\n  "error": "Unauthorized",\n  "message": "Token expired or invalid. Please re-authenticate."\n}',
+    mean:'401 = authentication failed. The Bearer token in the Authorization header is expired or missing.',
+    act:'Ask the client to go to Settings → Integrations and reconnect the calendar integration. Regenerate the API key if needed.' },
+  { t:'14:02:40',m:'POST',s:200,u:'/api/v1/conversations/messages/sms',sz:'0.5 KB',
+    body:'{\n  "to": "+15559876543",\n  "message": "Hello from GHL!"\n}',
+    resp:'{\n  "success": true,\n  "messageId": "msg_2291",\n  "status": "queued"\n}',
+    mean:'200 + "queued" is expected for SMS — GHL accepted the message and passed it to the SMS carrier. This is a SUCCESS response.',
+    act:'If SMS didn\'t arrive, the issue is downstream (carrier, phone number, A2P compliance) — not GHL\'s send API.' },
+  { t:'14:02:42',m:'GET', s:404,u:'/api/v1/funnels/fn_DELETED/pages',sz:'0.4 KB',body:null,
+    resp:'{\n  "error": "Not Found",\n  "message": "Funnel fn_DELETED does not exist or was removed"\n}',
+    mean:'404 = the resource at this URL doesn\'t exist. The funnel "fn_DELETED" was likely deleted from the sub-account.',
+    act:'Check the sub-account\'s Funnel Builder. The funnel was deleted. Recreate it or update the page reference to the correct funnel ID.' },
+];
+let lFilter='all', lSel=null;
+function filterL(f) {
+  lFilter=f;
+  ['all','err','srv'].forEach(k=>{ const b=document.getElementById('lf_'+k); b.className='lf '+k+(k===f?' on':''); });
+  renderLRows();
+}
+function renderLRows() {
+  let rows=LOGS;
+  if(lFilter==='err') rows=LOGS.filter(l=>l.s>=400);
+  if(lFilter==='srv') rows=LOGS.filter(l=>l.s>=500);
+  const el=document.getElementById('logRows'); if(!el) return;
+  el.innerHTML=rows.map(l=>{
+    const oi=LOGS.indexOf(l), sc=l.s>=500?'s5':l.s>=400?'s4':'s2';
+    return `<div class="lr ${lSel===oi?'hl':''}" onclick="showL(${oi})">
+      <span class="lt">${l.t}</span><span class="lm ${l.m}">${l.m}</span>
+      <span class="ls ${sc}">${l.s}</span><span class="lu">${l.u}</span><span class="lsz">${l.sz}</span></div>`;
+  }).join('');
+}
+function showL(i) {
+  lSel=i; renderLRows();
+  const l=LOGS[i], p=document.getElementById('logInsp');
+  const sc=l.s>=500?'var(--error)':l.s>=400?'var(--warn)':'var(--accent3)';
+  p.className='insp open';
+  p.innerHTML=`<div class="insp-t">Request Inspector</div>
+    <div class="irow"><span class="ik">Method</span><span class="iv ${l.m}" style="font-weight:700">${l.m}</span></div>
+    <div class="irow"><span class="ik">URL</span><span class="iv" style="color:var(--accent)">${l.u}</span></div>
+    <div class="irow"><span class="ik">Status</span><span class="iv" style="color:${sc};font-weight:700;font-size:15px">${l.s}</span></div>
+    <div class="irow"><span class="ik">Size</span><span class="iv">${l.sz}</span></div>
+    ${l.body?`<div class="isec"><div class="isec-t">Request Body (what was sent)</div><div class="ibody">${l.body}</div></div>`:''}
+    <div class="isec"><div class="isec-t">Response Body (what server said)</div><div class="ibody">${l.resp}</div></div>
+    <div class="isec"><div class="isec-t" style="color:var(--accent2)">🧠 What This Means</div><div class="imsg">${l.mean}</div></div>
+    <div class="isec"><div class="isec-t" style="color:var(--accent3)">✅ Support Action</div><div class="iact">${l.act}</div></div>`;
+}
+
+/* ── STATUS CODES ── */
+const SCS=[
+  {code:'200',label:'OK',color:'var(--accent3)',grp:'2xx',bg:'rgba(0,230,118,.15)',desc:'The request succeeded. Data was returned as expected.',act:'No action needed. Healthy traffic.'},
+  {code:'201',label:'Created',color:'var(--accent3)',grp:'2xx',bg:'rgba(0,230,118,.15)',desc:'A new resource was successfully created — contact, opportunity, booking, etc.',act:'Confirm the new resource appears in the GHL UI as expected.'},
+  {code:'400',label:'Bad Request',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'The request is malformed — wrong JSON format, missing fields, or invalid data types.',act:'Inspect the request body in DevTools. Compare field names and data formats against GHL API docs.'},
+  {code:'401',label:'Unauthorized',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'Authentication failed. The Bearer token is missing, expired, or invalid.',act:'Ask the client to go to Settings → Integrations and re-authenticate. Generate a new API key if needed.'},
+  {code:'403',label:'Forbidden',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'Authenticated but not permitted. The API key lacks the required scope/permissions for this action.',act:'Check the API key scopes in developer settings. Ensure the sub-account user has the correct role.'},
+  {code:'404',label:'Not Found',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'The resource at this URL doesn\'t exist — it was deleted, the ID is wrong, or the URL changed.',act:'Confirm the resource (funnel, workflow, contact) still exists in the sub-account. Check for typos in IDs.'},
+  {code:'422',label:'Unprocessable',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'Request understood but server rejected it — empty required field, wrong format, invalid enum value.',act:'Read the "fields" object in the response body — it lists exactly which fields failed and why.'},
+  {code:'429',label:'Rate Limited',color:'var(--warn)',grp:'4xx',bg:'rgba(255,201,60,.15)',desc:'Too many requests sent in a short period. GHL has API rate limits per integration.',act:'Advise client to reduce API call frequency. Implement throttling or exponential backoff in custom code.'},
+  {code:'500',label:'Internal Server Error',color:'var(--error)',grp:'5xx',bg:'rgba(244,68,110,.15)',desc:'GHL\'s server crashed while processing the request. Not the client\'s fault.',act:'Capture the traceId from the response body. Escalate to GHL engineering with timestamp. Check status.gohighlevel.com.'},
+  {code:'502',label:'Bad Gateway',color:'var(--error)',grp:'5xx',bg:'rgba(244,68,110,.15)',desc:'GHL\'s API gateway received an invalid response from an upstream service.',act:'Check status.gohighlevel.com. Usually a temporary infrastructure issue — advise client to retry in 5–10 minutes.'},
+  {code:'503',label:'Service Unavailable',color:'var(--error)',grp:'5xx',bg:'rgba(244,68,110,.15)',desc:'GHL servers are overloaded or undergoing maintenance.',act:'Check GHL status page immediately. Communicate the outage to the client with the status page link.'},
+];
+function buildSC() {
+  const el=document.getElementById('scGrid'); if(!el) return;
+  SCS.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='sc-row';
+    d.innerHTML=`<div class="sc-head" onclick="toggleSC(${i})">
+      <span class="sc-code" style="color:${s.color}">${s.code}</span>
+      <span class="sc-name">${s.label}</span>
+      <span class="sc-grp" style="background:${s.bg};color:${s.color}">${s.grp}</span>
+      <span class="sc-arr" id="sca${i}">▸</span></div>
+    <div class="sc-body" id="scb${i}"><div class="sc-desc">${s.desc}</div>
+    <div class="sc-act"><span>✅</span><span><strong>Support Action:</strong> ${s.act}</span></div></div>`;
+    el.appendChild(d);
+  });
+}
+function toggleSC(i) {
+  const b=document.getElementById('scb'+i), a=document.getElementById('sca'+i);
+  const o=b.style.display==='block'; b.style.display=o?'none':'block'; a.textContent=o?'▸':'▾';
+}
+
+/* ── SCENARIO DATA ── */
+const SCDATA={
+  5:{
+    tkt:{title:'Ticket: Form Submission Disappearing',body:'Client says: "When visitors submit our landing page lead form, they see the thank-you page but the leads never appear in our CRM. It\'s been happening since yesterday and we\'ve checked the form settings."'},
+    logs:[
+      {t:'10:14:21',m:'GET', s:200,u:'/api/v1/funnels/fn_9921/load',sz:'45 KB',hl:false},
+      {t:'10:14:29',m:'POST',s:422,u:'/api/v1/forms/fn_9921/submit',sz:'0.6 KB',hl:true},
+      {t:'10:14:29',m:'GET', s:200,u:'/api/v1/funnel/thankyou-redirect',sz:'12 KB',hl:false},
+    ],
+    resp:'{\n  "error": "Validation failed",\n  "fields": {\n    "email": "Email is required",\n    "phone": "Invalid format — use E.164 (+15551234567)"\n  }\n}',
+    steps:[
+      'The funnel page loads successfully (GET 200) — the page itself is working fine.',
+      'The form submit POST returns 422 — a validation error on the server side.',
+      'The thank-you redirect fires regardless — this is a front-end bug; it doesn\'t wait for API success.',
+      'Read the response body: email field is empty on submit, phone format is incorrect.',
+      'Root cause: Required fields are not properly captured — form has hidden or mis-mapped fields.',
+      'Fix: GHL Form Builder → check field mappings. Ensure email is required and visible. Fix phone format to E.164. Test and confirm leads appear in CRM.',
+    ]
+  },
+  6:{
+    tkt:{title:'Ticket: Workflow Automation Stopped Firing',body:'Client says: "Our New Lead → Send Welcome Email workflow completely stopped 3 days ago. Leads are still added to CRM but no emails go out and there\'s no error message anywhere in GHL."'},
+    logs:[
+      {t:'09:32:10',m:'POST',s:200,u:'/api/v1/contacts',sz:'0.8 KB',hl:false},
+      {t:'09:32:11',m:'POST',s:401,u:'/api/v1/workflows/wf_4421/trigger',sz:'0.3 KB',hl:true},
+    ],
+    resp:'{\n  "error": "Unauthorized",\n  "message": "API token expired. Please re-authenticate the integration.",\n  "tokenExpiredAt": "2024-11-08T03:00:00Z"\n}',
+    steps:[
+      'Contact creation succeeds (POST 200) — the lead is being added to CRM correctly.',
+      'Immediately after, the workflow trigger call fails with 401 Unauthorized.',
+      'The response body says the API token expired — it even gives an exact expiry timestamp.',
+      'The timestamp matches the 3-day window the client reported — a scheduled token rotation triggered this.',
+      'Root cause: The API key or OAuth token powering workflow triggers expired automatically.',
+      'Fix: Settings → Integrations → find the affected integration → Re-authenticate or regenerate the API key. Test a manual workflow trigger to confirm.',
+    ]
+  },
+  7:{
+    tkt:{title:'Ticket: Stripe Payments Not Recorded in GHL',body:'Client says: "Customers\' cards are being charged — we can see it in Stripe dashboard — but payments don\'t show up in GHL at all. Calendar bookings also aren\'t being created."'},
+    logs:[
+      {t:'15:55:03',m:'POST',s:200,u:'https://api.stripe.com/v1/payment_intents',sz:'2.1 KB',hl:false},
+      {t:'15:55:04',m:'POST',s:403,u:'/api/v1/payments/stripe/confirm',sz:'0.5 KB',hl:true},
+      {t:'15:55:04',m:'POST',s:0,  u:'/api/v1/calendar/appointments',sz:'—',hl:false},
+    ],
+    resp:'{\n  "error": "Forbidden",\n  "message": "Stripe integration not connected to this sub-account.",\n  "requiredScope": "payments:write"\n}',
+    steps:[
+      'Stripe charges the card successfully (200 to api.stripe.com) — the payment went through on Stripe\'s side.',
+      'GHL\'s payment confirmation endpoint returns 403 Forbidden — not 401 (wrong key) but 403 (no permission).',
+      'The response body says the Stripe integration is not connected to THIS sub-account, with a missing "payments:write" scope.',
+      'The calendar appointment call returns status 0 — it never fired because it depends on a successful payment confirmation.',
+      'Root cause: Stripe was disconnected from GHL (likely during an account reconnect or sub-account transfer).',
+      'Fix: Sub-account → Payments → Integrations → Reconnect Stripe. Verify the webhook signing secret matches in both Stripe and GHL. Manually reprocess affected payments.',
+    ]
+  },
+  8:{
+    tkt:{title:'Ticket: SMS Messages Not Delivered to Leads',body:'Client says: "We\'re sending SMS from a workflow but leads say they never receive messages. GHL conversation log shows Sent status. Our A2P 10DLC registration is complete."'},
+    logs:[
+      {t:'11:20:15',m:'POST',s:200,u:'/api/v1/conversations/messages/sms',sz:'0.5 KB',hl:false},
+      {t:'11:20:16',m:'GET', s:200,u:'/api/v1/conversations/msg_8821/status',sz:'0.3 KB',hl:true},
+    ],
+    resp:'{\n  "messageId": "msg_8821",\n  "status": "undelivered",\n  "errorCode": "30003",\n  "errorMessage": "Unreachable destination handset",\n  "carrier": "T-Mobile",\n  "to": "+15559001234"\n}',
+    steps:[
+      'The SMS POST returns 200 — GHL accepted and queued the message. This is correct and expected.',
+      'Checking the message status endpoint reveals "undelivered" — GHL sent it but the carrier rejected it.',
+      'Error code 30003 is a Twilio/carrier-level code meaning "Unreachable destination handset."',
+      'This means the destination phone is off, out of service, or blocking SMS — not an A2P or GHL config issue.',
+      'Root cause: The phone number is unreachable at the carrier level. If bulk numbers fail, audit the contact list for bad/fake numbers.',
+      'Fix: Verify the phone number is valid and in service. If multiple contacts have 30003 errors, clean the contact list. For persistent issues, confirm A2P 10DLC brand/campaign approval status in GHL settings.',
+    ]
+  },
+  9:{
+    tkt:{title:'Ticket: Ad Manager Account Not Appearing in Integration Dropdown',body:'Client says: "I\'m connecting our Facebook Ad account in GHL Ad Manager. I can see it in Facebook Business Manager but it never shows when I search in the GHL dropdown. We\'ve reconnected Facebook three times."'},
+    logs:[
+      {t:'13:45:02',m:'GET',s:200,u:'/api/v1/ad-manager/facebook/accounts?page=1&limit=25',sz:'8.2 KB',hl:false},
+      {t:'13:45:03',m:'GET',s:200,u:'/api/v1/ad-manager/facebook/accounts?search=Acme&page=1&limit=25',sz:'1.1 KB',hl:true},
+    ],
+    resp:'{\n  "accounts": [],\n  "total": 47,\n  "page": 1,\n  "limit": 25,\n  "hasNextPage": true,\n  "searchQuery": "Acme"\n}',
+    steps:[
+      'The first API call loads page 1 of ad accounts with limit=25 — it returns 200 with data. Connection is working.',
+      'The second call (triggered by typing in the search box) returns 200 — but "accounts" is an empty array despite "total": 47.',
+      'Critical clue: "total": 47 accounts exist AND "hasNextPage": true — meaning 22+ accounts are on page 2 or beyond.',
+      'The fuzzy search is running ONLY against the 25 accounts loaded on page 1 — not the full 47 account dataset.',
+      'Root cause: Known GHL pagination + client-side fuzzy search bug. The dropdown search filters only the visible page, not all accounts.',
+      'Fix: Scroll down in the dropdown to trigger page 2 to load — the missing account should appear. Try a shorter/broader search term. Document and submit to GHL as a product bug, including this network log as evidence.',
+    ]
+  }
+};
+const scenBuilt={};
+function buildScenario(i) {
+  if(![5,6,7,8,9].includes(i)||scenBuilt[i]) return;
+  scenBuilt[i]=true;
+  const data=SCDATA[i], el=document.getElementById('sc'+i);
+  const logRows=data.logs.map(l=>{
+    const sc=l.s>=500?'s5':l.s>=400?'s4':l.s===0?'s4':'s2';
+    return `<div class="lr ${l.hl?'hl':''}" style="cursor:default">
+      <span class="lt">${l.t}</span><span class="lm ${l.m}">${l.m}</span>
+      <span class="ls ${sc}">${l.s||'—'}</span><span class="lu">${l.u}</span><span class="lsz">${l.sz}</span></div>`;
+  }).join('');
+  const steps=data.steps.map((s,j)=>`
+    <div class="sitem ${j===0?'':'locked'}" id="si_${i}_${j}" onclick="revStep(${i},${j})">
+      <div class="scb" id="scb_${i}_${j}">${j+1}</div><div>${s}</div></div>`).join('');
+  el.innerHTML=`
+    <div class="ticket"><div class="tkt-label">⚠ Support Ticket</div><div class="tkt-title">${data.tkt.title}</div><div class="tkt-body">${data.tkt.body}</div></div>
+    <div class="card"><div class="card-title"><span>📡</span> Captured Network Logs</div>
+      <div class="lv"><div class="lv-bar"><div class="dots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c940"></span></div><span class="lv-title">DevTools → Network → Fetch/XHR</span></div><div class="lrows">${logRows}</div></div>
+      <div style="margin-top:12px;background:#050810;border:1px solid var(--border);border-radius:9px;padding:14px;">
+        <div style="font-size:9px;font-weight:700;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Outfit',sans-serif;">Response Body (highlighted row)</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent3);white-space:pre-wrap;line-height:1.7;">${data.resp}</div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title"><span>🔍</span> Walk Through the Diagnosis — Click each step in order</div>
+      <div class="step-list">${steps}</div>
+      <div class="done-banner" id="db_${i}"><span style="font-size:24px;">🎯</span><div><strong>Diagnosis complete!</strong> You identified the root cause and the fix.</div></div>
+      <p class="tip">💡 Click Step 1 to begin. Each step unlocks after the previous one.</p>
+    </div>`;
+  scenSteps[i]=0;
+}
+const scenSteps={};
+function revStep(mod,j) {
+  if(j!==scenSteps[mod]) return;
+  const item=document.getElementById('si_'+mod+'_'+j), cb=document.getElementById('scb_'+mod+'_'+j);
+  item.classList.add('sdone'); item.classList.remove('locked'); cb.textContent='✓';
+  scenSteps[mod]++;
+  const next=document.getElementById('si_'+mod+'_'+scenSteps[mod]);
+  if(next) next.classList.remove('locked');
+  if(scenSteps[mod]>=SCDATA[mod].steps.length) document.getElementById('db_'+mod).classList.add('show');
+}
+
+/* ── QUIZ ── */
+const QS=[
+  {q:'A client\'s form submits and shows the thank-you page, but leads never appear in GHL CRM. Network logs show a POST to /api/v1/forms/submit returning 422. What is your immediate next step?',
+   opts:['Check the GHL status page for an outage','Read the response body — it will list which fields failed validation','Ask the client to clear browser cache','Reconnect the sub-account integration'],
+   c:1,exp:'422 Unprocessable means the request was understood but data failed validation. The response body\'s "fields" object always lists exactly which fields failed and why — that\'s your root cause in plain language.'},
+  {q:'A workflow automation stopped working 4 days ago. Contacts are still being created. Network logs show a POST to /api/v1/workflows/trigger returning 401. What does this indicate?',
+   opts:['GHL servers are experiencing an outage','The workflow was accidentally deleted','The API token used by the integration has expired or is invalid','The workflow has too many contacts enrolled'],
+   c:2,exp:'401 Unauthorized = authentication failed. In GHL, this almost always means the API key or OAuth token for a connected integration has expired. Fix: Settings → Integrations → re-authenticate or regenerate the key.'},
+  {q:'Stripe is charging cards (visible in Stripe dashboard), but GHL isn\'t recording the payments. You see a 403 on /api/v1/payments/stripe/confirm. What\'s the most likely cause?',
+   opts:['Stripe is experiencing a service outage','The GHL Stripe integration was disconnected from this sub-account','The customer\'s card was declined by their bank','GHL doesn\'t support Stripe for this plan tier'],
+   c:1,exp:'403 Forbidden means authenticated but not permitted — specifically, GHL can\'t find or access the Stripe integration for this sub-account. The integration was likely disconnected. Fix: Sub-account → Payments → Integrations → Reconnect Stripe.'},
+  {q:'An SMS workflow shows "Sent" in GHL, but leads report never receiving messages. The network log\'s message status endpoint shows errorCode "30003". What does this tell you?',
+   opts:['GHL\'s SMS service is currently down','The A2P 10DLC registration was rejected by the carrier','The destination phone number is unreachable at the carrier level','The message content triggered a spam filter'],
+   c:2,exp:'Error code 30003 is a Twilio/carrier-level code: "Unreachable destination handset" — the phone is off, out of service, or blocking SMS. GHL successfully sent the message; the issue is downstream with the recipient\'s carrier or device.'},
+  {q:'A Facebook Ad account exists in Business Manager but doesn\'t appear in GHL\'s Ad Manager dropdown. Network logs show the search returns 200 with an empty "accounts" array but "total": 47 and "hasNextPage": true. What is happening?',
+   opts:['The Facebook integration token has expired','The ad account was suspended by Facebook','GHL\'s search only queries the current page of 25 accounts — not all 47. The account is on page 2+','The client needs to upgrade their GHL plan to access more ad accounts'],
+   c:2,exp:'This is the GHL Ad Manager pagination + fuzzy search bug. The dropdown loads 25 accounts at a time, and the search filters only the loaded page — not all 47. The missing account is on a later page. Fix: Scroll down in the dropdown to load more, or use a shorter search term.'},
+  {q:'You see a 500 error on /api/v1/calendar/sync with a "traceId" in the response body. A booking showed "success" to the customer but doesn\'t appear in GHL. What should you do?',
+   opts:['Ask the client to delete and recreate the calendar','Tell the client to clear cookies and try incognito mode','Escalate to GHL engineering — include the traceId and timestamp from the network log','Disconnect and reconnect the calendar integration from scratch'],
+   c:2,exp:'500 errors are server-side — not caused by anything the client did. The traceId is a unique identifier that GHL engineers use to trace what went wrong internally. Always copy it and include it in your escalation. Also check status.gohighlevel.com.'},
+  {q:'Which HTTP status code would you expect to see when an API integration has exceeded GHL\'s rate limit?',
+   opts:['400 Bad Request','404 Not Found','429 Too Many Requests','503 Service Unavailable'],
+   c:2,exp:'429 Too Many Requests is the standard HTTP response for rate limiting. In GHL, this appears when a custom integration or tool makes too many API calls per second/minute. Fix: Implement throttling or exponential backoff in the integration\'s code.'},
+];
+let qSt={cur:0,ans:[],score:0};
+function buildQ(){qSt={cur:0,ans:new Array(QS.length).fill(null),score:0};renderQ();}
+function renderQ(){
+  const c=document.getElementById('qBox'); if(!c) return;
+  const i=qSt.cur;
+  if(i>=QS.length){showResult();return;}
+  const q=QS[i], done=qSt.ans[i]!==null;
+  c.innerHTML=`<div class="qnav"><span class="qctr">Question ${i+1} of ${QS.length}</span><span style="font-size:12px;color:var(--accent);font-weight:700">Score: ${qSt.score} / ${QS.length}</span></div>
+    <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,j)=>{
+      let cls='qopt'+(done?' locked':'');
+      if(done&&j===q.c) cls+=' correct';
+      if(done&&j===qSt.ans[i]&&j!==q.c) cls+=' wrong';
+      return `<div class="${cls}" onclick="ansQ(${i},${j})"><span class="qlbl">${String.fromCharCode(65+j)}</span><span>${o}</span></div>`;
+    }).join('')}</div>
+    <div class="qfb ${done?'show':''} ${done?(qSt.ans[i]===q.c?'correct':'wrong'):''}">
+      ${done?(qSt.ans[i]===q.c?'✅ Correct! ':'❌ Not quite. ')+q.exp:''}</div>
+    ${done&&i<QS.length-1?`<div class="btn-row" style="margin-top:16px;"><button class="btn btn-p" onclick="nextQ()">Next Question →</button></div>`:''}
+    ${done&&i===QS.length-1?`<div class="btn-row" style="margin-top:16px;"><button class="btn btn-p" onclick="nextQ()">See Results →</button></div>`:''}`;
+}
+function ansQ(qi,j){
+  if(qSt.ans[qi]!==null) return;
+  qSt.ans[qi]=j; if(j===QS[qi].c) qSt.score++;
+  document.getElementById('scorePill').textContent=qSt.score+' / '+QS.length;
+  renderQ();
+}
+function nextQ(){qSt.cur++;renderQ();}
+function showResult(){
+  const c=document.getElementById('qBox'), p=qSt.score/QS.length;
+  const emoji=p===1?'🏆':p>=0.85?'🎯':p>=0.7?'📈':'📚';
+  const msg=p===1?'Perfect score! You\'re fully equipped to use Network Logs for GHL Premium Support.':p>=0.85?'Excellent. Review the missed questions in the Scenario Lab modules.':p>=0.7?'Good foundation. Revisit the Core Concepts modules and Scenario Lab.':'Take time to revisit the modules and work through each scenario again before going live.';
+  c.innerHTML=`<div class="result"><div class="result-emoji">${emoji}</div>
+    <div class="result-score" style="color:${p>=0.7?'var(--accent3)':'var(--warn)'}">${qSt.score} / ${QS.length}</div>
+    <div class="result-msg">${msg}</div>
+    <button class="btn btn-g" onclick="resetQ()">↺ Retake Quiz</button></div>`;
+}
+function resetQ(){buildQ();}
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded',()=>{buildSC();renderLRows();buildQ();});
+</script>
+</body>
+</html>
